@@ -31,7 +31,7 @@ namespace HotelManagement.Application.Features.Auth.Commands.Register
         {
             _userManager = userManager;
         }
-        public async  Task<AuthResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<AuthResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             
    

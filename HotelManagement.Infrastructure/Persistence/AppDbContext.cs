@@ -1,4 +1,5 @@
 ﻿using HotelManagement.Application.Domain.Entities;
+using HotelManagement.Application.Features.Room.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,15 +8,15 @@ using System.Text;
 
 namespace HotelManagement.Infrastructure.Persistence
 {
-    public class AppDbContext : IdentityDbContext<User>
+    public class AppDbContext : IdentityDbContext<User>, IAppDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
         }
-        public DbSet<Room> Rooms ;
-        public DbSet<Reservation> Reservations ;
-        public DbSet<AuditLog> AuditLogs ;
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Reservation> Reservations { get; set; } 
+        public DbSet<AuditLog> AuditLogs { get; set; } 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -54,10 +55,23 @@ namespace HotelManagement.Infrastructure.Persistence
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            builder.Entity<Room>()
+                .Property(r => r.RoomNumber)
+                .IsRequired()
+                .HasMaxLength(20);
             // Decimal Precision Setup
             builder.Entity<Room>()
                 .Property(r => r.PricePerNight)
                 .HasPrecision(18, 2);
+
+           builder.Entity<Room>()
+               .Property(r => r.CreatedAt)
+              .IsRequired();
+
+            builder.Entity<Room>()
+            .Property(c=>c.Type)
+           .IsRequired()
+            .HasMaxLength(50);
 
             builder.Entity<Room>()
                 .HasIndex(r => r.RoomNumber)

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using HotelManagement.Infrastructure.Persistence;
 
 using System.Text;
+using System.Security.Claims;
 
 namespace HotelManagement.API.Extensions
 {
@@ -31,14 +32,15 @@ namespace HotelManagement.API.Extensions
         }
         public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration config)
         {
-
-        services.AddAuthentication(x =>
+           services.AddAuthentication(x =>
             {
-                
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(y =>
             {
                 y.SaveToken = true;
+                y.RequireHttpsMetadata = true;
                 y.TokenValidationParameters = new TokenValidationParameters
                 {
 
@@ -49,9 +51,13 @@ namespace HotelManagement.API.Extensions
                     ValidateAudience = true,
                     ValidIssuer = config["ValidIssuer"],
                     ValidAudience = config["ValidAudience"],
+                    NameClaimType = ClaimTypes.NameIdentifier
+
 
                 };
+                
             });
+
             services.AddCors(options =>
             {
                 options.AddPolicy(AngularLocalhostCorsPolicy, policy =>

@@ -12,6 +12,9 @@ namespace HotelManagement.Application.Domain.Entities
         public decimal PricePerNight { get; set; }
         public bool IsAvailable { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsDeleted { get; set; } = false;
+
+        
         // Navigation Properties
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }

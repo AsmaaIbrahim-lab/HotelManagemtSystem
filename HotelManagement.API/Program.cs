@@ -2,6 +2,7 @@ using HotelManagement.API.Extensions;
 using HotelManagement.Application.Features.Auth;
 using HotelManagement.Application.Features.Auth.Commands.Register;
 using HotelManagement.Application.Features.Auth.Interfaces;
+using HotelManagement.Application.Features.Room.Interfaces;
 using HotelManagement.Infrastructure.Persistence;
 using HotelManagement.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,9 @@ namespace HotelManagement.API
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IAppDbContext>(provider =>
+    provider.GetRequiredService<AppDbContext>());
 
             // 3. Identity Configuration
             builder.Services.AddIdentityServices();

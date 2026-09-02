@@ -32,8 +32,8 @@ namespace HotelManagement.Infrastructure.Services
         };
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: _configuration["ValidIssuer"],
+                audience: _configuration["ValidAudience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(8),
                 signingCredentials: creds
