@@ -16,7 +16,7 @@ A .NET 10 REST API for hotel room, reservation, and report management. Built wit
 | | |
 |---|---|
 | **Email** | `admin@hotel.com` |
-| **Password** | `Admin@123` |
+| **Password** | `Admin@_123` |
 
 The demo user, along with a few rooms and reservations, is seeded automatically on first startup (Development). This ensures reports and the dashboard show meaningful data out of the box.
 
