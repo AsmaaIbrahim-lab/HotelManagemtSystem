@@ -1,4 +1,5 @@
-﻿using HotelManagement.Application.Features.Auth.Commands.Login;
+﻿using HotelManagement.Application.DTOs.AuthDTOs;
+using HotelManagement.Application.Features.Auth.Commands.Login;
 using HotelManagement.Application.Features.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -18,8 +19,9 @@ namespace HotelManagement.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO RegisterDTO)
         {
+            RegisterCommand command = new RegisterCommand( RegisterDTO.FullName, RegisterDTO.Email, RegisterDTO.Password);
             var userResponse = await _mediator.Send(command);
             return Ok(new { UserId = userResponse.UserId, Message = "User registered successfully." });
         }

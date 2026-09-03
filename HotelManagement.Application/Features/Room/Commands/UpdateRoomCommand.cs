@@ -15,10 +15,10 @@ namespace HotelManagement.Application.Features.Room.Commands
         string RoomNumber,
         string RoomType,
         decimal PricePerNight
-    ) : IRequest;
+    ) : IRequest<string>;
 
     public class UpdateRoomCommandHandler
-        : IRequestHandler<UpdateRoomCommand>
+        : IRequestHandler<UpdateRoomCommand,string>
     {
         private readonly IAppDbContext _context;
         private readonly ICurrentUser _currentUserService;
@@ -29,7 +29,7 @@ namespace HotelManagement.Application.Features.Room.Commands
             _currentUserService = currentUserService;
         }
 
-        public async Task<Unit> Handle(
+        public async Task<string> Handle(
             UpdateRoomCommand request,
             CancellationToken cancellationToken)
         {
@@ -76,7 +76,7 @@ namespace HotelManagement.Application.Features.Room.Commands
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return "Updating Room Completed successfully";
         }
     }
 }

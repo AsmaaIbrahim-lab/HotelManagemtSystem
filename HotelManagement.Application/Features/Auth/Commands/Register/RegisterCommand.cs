@@ -1,5 +1,6 @@
 ﻿using HotelManagement.Application.Domain.Entities;
 using HotelManagement.Application.DTOs;
+using HotelManagement.Application.DTOs.AuthDTOs;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -11,17 +12,7 @@ using System.Text;
 
 namespace HotelManagement.Application.Features.Auth.Commands.Register
 {
-    public record RegisterCommand([Required(ErrorMessage = "Full name is required.")]
-    [StringLength(100, ErrorMessage = "Full name cannot exceed 100 characters.")]
-    string FullName,
-
-    [Required(ErrorMessage = "Email is required.")]
-    [EmailAddress(ErrorMessage = "Invalid email format.")]
-    string Email,
-
-    [Required(ErrorMessage = "Password is required.")]
-    [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
-    string Password) : IRequest<AuthResponse>
+    public record RegisterCommand(string FullName,string Email,string Pasword) : IRequest<AuthResponse>
     { }
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthResponse>
     {
@@ -52,7 +43,7 @@ namespace HotelManagement.Application.Features.Auth.Commands.Register
             CreatedAt = DateTime.UtcNow
         };
 
-        var result = await _userManager.CreateAsync(user, request.Password);
+        var result = await _userManager.CreateAsync(user, request.Pasword);
 
         if (!result.Succeeded)
         {

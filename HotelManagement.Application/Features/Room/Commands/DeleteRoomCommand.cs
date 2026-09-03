@@ -11,12 +11,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.Application.Features.Room.Commands
 {
-    public record DeleteRoomCommand(int Id) : IRequest;
+    public record DeleteRoomCommand(int Id) : IRequest<string>;
 
-    public class DeleteRoomCommandHandler
-        : IRequestHandler<DeleteRoomCommand>
+     internal class DeleteRoomCommandHandler
+        :IRequestHandler<DeleteRoomCommand,string>
     {
-        private readonly IAppDbContext _context;
+        private readonly IAppDbContext _context;            
         private readonly ICurrentUser _currentUserService;
 
         public DeleteRoomCommandHandler(IAppDbContext context, ICurrentUser currentUserService)
@@ -25,9 +25,8 @@ namespace HotelManagement.Application.Features.Room.Commands
             _currentUserService = currentUserService;
         }
 
-        public async Task<Unit> Handle(
-            DeleteRoomCommand request,
-            CancellationToken cancellationToken)
+      public async Task<string> Handle(DeleteRoomCommand request, CancellationToken cancellationToken)
+
         {
             var room = await _context.Rooms
                 .FirstOrDefaultAsync(
@@ -60,7 +59,8 @@ namespace HotelManagement.Application.Features.Room.Commands
             }
             else
             {
-                room.IsDeleted = true;
+                _context.Rooms.Remove(room);
+
             }
 
             var auditLog = new AuditLog
@@ -77,7 +77,10 @@ namespace HotelManagement.Application.Features.Room.Commands
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return "Deletion Completed Successfully";
+
         }
+
+       
     }
 }

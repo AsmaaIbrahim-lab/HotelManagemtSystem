@@ -12,7 +12,7 @@ namespace HotelManagement.Application.Features.Room.Interfaces
         DbSet<Domain.Entities.Room> Rooms { get; }
         DbSet<AuditLog> AuditLogs { get; }
         DatabaseFacade Database { get; }
-        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<Domain.Entities.Reservation> Reservations { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

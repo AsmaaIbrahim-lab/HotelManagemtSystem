@@ -1,7 +1,9 @@
 using HotelManagement.API.Extensions;
+using HotelManagement.Application.Common;
 using HotelManagement.Application.Features.Auth;
 using HotelManagement.Application.Features.Auth.Commands.Register;
 using HotelManagement.Application.Features.Auth.Interfaces;
+using HotelManagement.Application.Features.Room.Commands;
 using HotelManagement.Application.Features.Room.Interfaces;
 using HotelManagement.Infrastructure.Persistence;
 using HotelManagement.Infrastructure.Services;
@@ -26,16 +28,17 @@ namespace HotelManagement.API
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             builder.Services.AddMediatR(cfg =>
-              cfg.RegisterServicesFromAssembly(
+             cfg.RegisterServicesFromAssembly(
               typeof(RegisterCommand).Assembly));
+           
             // 2. Database Context
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IAppDbContext>(provider =>
-    provider.GetRequiredService<AppDbContext>());
-
+             provider.GetRequiredService<AppDbContext>());
+            
             // 3. Identity Configuration
             builder.Services.AddIdentityServices();
             builder.Services.ConfigureIdentityOptions();
