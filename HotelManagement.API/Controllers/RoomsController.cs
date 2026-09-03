@@ -26,9 +26,20 @@ namespace HotelManagement.API.Controllers
         public async Task<IActionResult> Create(
             CreateRoomCommand command)
         {
-            var id = await _mediator.Send(command);
+            try
+            {
+                var id = await _mediator.Send(command);
 
-            return Ok(new { id }); ;
+                return Ok(new { id });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         [HttpGet]
@@ -57,25 +68,51 @@ namespace HotelManagement.API.Controllers
            int id,
            UpdateRoomRequest request)
         {
-            var command = new UpdateRoomCommand(
-                id,
-                request.RoomNumber,
-                request.RoomType,
-                request.PricePerNight
-            );
+            try
+            {
+                var command = new UpdateRoomCommand(
+                    id,
+                    request.RoomNumber,
+                    request.RoomType,
+                    request.PricePerNight
+                );
 
-            await _mediator.Send(command);
+                await _mediator.Send(command);
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _mediator.Send(
-                new DeleteRoomCommand(id));
+            try
+            {
+                await _mediator.Send(
+                    new DeleteRoomCommand(id));
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         [HttpGet("available")]

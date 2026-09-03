@@ -21,16 +21,37 @@ namespace HotelManagement.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO RegisterDTO)
         {
-            RegisterCommand command = new RegisterCommand( RegisterDTO.FullName, RegisterDTO.Email, RegisterDTO.Password);
-            var userResponse = await _mediator.Send(command);
-            return Ok(new { UserId = userResponse.UserId, Message = "User registered successfully." });
+            try
+            {
+                RegisterCommand command = new RegisterCommand( RegisterDTO.FullName, RegisterDTO.Email, RegisterDTO.Password);
+                var userResponse = await _mediator.Send(command);
+                return Ok(new { UserId = userResponse.UserId, Message = "User registered successfully." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.Message.Contains("already registered"))
+                    return Conflict(new { message = ex.Message });
+
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
-            var response = await _mediator.Send(command);
-            return Ok(response);
+            try
+            {
+                var response = await _mediator.Send(command);
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new { message = "Invalid email or password." });
+            }
         }
 
     }

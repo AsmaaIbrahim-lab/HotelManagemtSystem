@@ -2,13 +2,16 @@ using HotelManagement.API.Extensions;
 using HotelManagement.API.Hubs;
 using HotelManagement.API.Services;
 using HotelManagement.Application.Common;
+using HotelManagement.Application.Domain.Entities;
 using HotelManagement.Application.Features.Auth;
 using HotelManagement.Application.Features.Auth.Commands.Register;
 using HotelManagement.Application.Features.Auth.Interfaces;
 using HotelManagement.Application.Features.Room.Commands;
 using HotelManagement.Application.Features.Room.Interfaces;
 using HotelManagement.Infrastructure.Persistence;
+using HotelManagement.Infrastructure.Seed;
 using HotelManagement.Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagement.API
@@ -61,10 +64,27 @@ namespace HotelManagement.API
             {
                 using (var scope = app.Services.CreateScope())
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    await db.Database.MigrateAsync();
+                    var services = scope.ServiceProvider;
+                    try
+                    {
+                        var db = services.GetRequiredService<AppDbContext>();
+                        await db.Database.MigrateAsync();
 
-                    // TODO: Add database seed logic here (Demo user, rooms, reservations)
+                        var userManager = services.GetRequiredService<UserManager<User>>();
+                        await DbSeeder.SeedAsync(db, userManager);
+
+                        Console.WriteLine("--> Database Seeded Successfully!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"--> ERROR DURING SEEDING: {ex.Message}");
+                        if (ex.InnerException != null)
+                        {
+                            Console.WriteLine($"--> INNER ERROR: {ex.InnerException.Message}");
+                        }
+                    }
+                
+            }
                 }
 
                 // OpenAPI & Swagger UI Setup
@@ -75,7 +95,7 @@ namespace HotelManagement.API
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel API v1");
                     c.RoutePrefix = "swagger"; // Serves Swagger UI at /swagger
                 });
-            }
+            
 
             // 7. Standard Middleware Pipeline (Strict Order Matters)
             app.UseHttpsRedirection();

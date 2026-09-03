@@ -23,11 +23,26 @@ namespace HotelManagement.API.Controllers
         [FromBody] CreateReservationCommand command,
         CancellationToken cancellationToken)
         {
-            var reservationId = await _mediator.Send(
-                command,
-                cancellationToken);
+            try
+            {
+                var reservationId = await _mediator.Send(
+                    command,
+                    cancellationToken);
 
-            return Ok(reservationId);
+                return Ok(reservationId);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         [HttpGet("All")]
@@ -74,10 +89,21 @@ namespace HotelManagement.API.Controllers
         [HttpPut("cancel/{id:int}")]
         public async Task<IActionResult> Cancel(int id)
         {
-            await _mediator.Send(
-                new CancelReservationCommand(id));
+            try
+            {
+                await _mediator.Send(
+                    new CancelReservationCommand(id));
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
     }
 }
