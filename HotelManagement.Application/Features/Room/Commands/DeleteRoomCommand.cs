@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using HotelManagement.Application.Common;
 using HotelManagement.Application.Domain.Entities;
 using HotelManagement.Application.Features.Auth.Interfaces;
 using HotelManagement.Application.Features.Room.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HotelManagement.Application.Features.Room.Commands
 {
@@ -18,11 +19,14 @@ namespace HotelManagement.Application.Features.Room.Commands
     {
         private readonly IAppDbContext _context;            
         private readonly ICurrentUser _currentUserService;
+        private readonly IHotelHubContext _hubContext;
 
-        public DeleteRoomCommandHandler(IAppDbContext context, ICurrentUser currentUserService)
+
+        public DeleteRoomCommandHandler(IAppDbContext context, ICurrentUser currentUserService, IHotelHubContext hubContext)
         {
             _context = context;
             _currentUserService = currentUserService;
+            _hubContext = hubContext;
         }
 
       public async Task<string> Handle(DeleteRoomCommand request, CancellationToken cancellationToken)
@@ -76,6 +80,14 @@ namespace HotelManagement.Application.Features.Room.Commands
             _context.AuditLogs.Add(auditLog);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _hubContext.SendRoomDeletedAsync(
+                new
+                {
+                    room.RoomNumber
+                },
+                 cancellationToken
+                 );
 
             return "Deletion Completed Successfully";
 

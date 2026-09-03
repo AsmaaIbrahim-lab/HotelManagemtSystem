@@ -1,11 +1,11 @@
 ﻿using HotelManagement.Application.Domain.Entities;
+using HotelManagement.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using HotelManagement.Infrastructure.Persistence;
-
-using System.Text;
 using System.Security.Claims;
+using System.Text;
 
 namespace HotelManagement.API.Extensions
 {
@@ -55,7 +55,22 @@ namespace HotelManagement.API.Extensions
 
 
                 };
-                
+                y.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        // Route hub token automatically
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/hotel"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+
             });
 
             services.AddCors(options =>

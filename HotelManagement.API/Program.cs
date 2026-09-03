@@ -1,4 +1,6 @@
 using HotelManagement.API.Extensions;
+using HotelManagement.API.Hubs;
+using HotelManagement.API.Services;
 using HotelManagement.Application.Common;
 using HotelManagement.Application.Features.Auth;
 using HotelManagement.Application.Features.Auth.Commands.Register;
@@ -25,7 +27,9 @@ namespace HotelManagement.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSignalR();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+            builder.Services.AddScoped<IHotelHubContext, HotelHubContext>();
             builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             builder.Services.AddMediatR(cfg =>
              cfg.RegisterServicesFromAssembly(
@@ -78,10 +82,10 @@ namespace HotelManagement.API
 
             app.UseCors(ServiceCollectionExtensions.AngularLocalhostCorsPolicy);
 
-            app.UseAuthentication(); // 1. Identify WHO the user is
-            app.UseAuthorization();  // 2. Determine WHAT the user can access
-
+            app.UseAuthentication();
+            app.UseAuthorization();  
             app.MapControllers();
+            app.MapHub<HotelHub>("/hubs/hotel");
 
             await app.RunAsync();
         }

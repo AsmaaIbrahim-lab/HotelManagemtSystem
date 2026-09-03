@@ -32,7 +32,9 @@ namespace HotelManagement.Application.Features.AuditLogs
                     x.EntityName,
                     x.EntityId,
                     x.UserId,
+                    x.Details,
                     x.ActionDate
+                    
                 ))
                 .ToListAsync(cancellationToken);
         }

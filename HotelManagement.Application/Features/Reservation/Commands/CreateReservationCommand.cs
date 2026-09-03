@@ -1,4 +1,5 @@
-﻿using HotelManagement.Application.Domain.Entities;
+﻿using HotelManagement.Application.Common;
+using HotelManagement.Application.Domain.Entities;
 using HotelManagement.Application.Features.Auth.Interfaces;
 using HotelManagement.Application.Features.Room.Interfaces;
 using MediatR;
@@ -22,13 +23,16 @@ namespace HotelManagement.Application.Features.Reservation.Commands
     {
         private readonly IAppDbContext _context;
         private readonly ICurrentUser _currentUserService;
-
+        private readonly IHotelHubContext _hubContext;
         public CreateReservationCommandHandler(
             IAppDbContext context,
-            ICurrentUser currentUserService)
+            ICurrentUser currentUserService,
+             IHotelHubContext hubContext)
+
         {
             _context = context;
             _currentUserService = currentUserService;
+            _hubContext = hubContext;
         }
 
         public async Task<int> Handle(
@@ -139,6 +143,21 @@ namespace HotelManagement.Application.Features.Reservation.Commands
                 _context.AuditLogs.Add(auditLog);
 
                 await _context.SaveChangesAsync(cancellationToken);
+
+                await _hubContext.SendReservationCreatedAsync(
+             
+               new
+                {
+                 reservation.Id,
+                 reservation.Room.RoomNumber,
+                 reservation.GuestName,
+                 reservation.CheckInDate,
+                 reservation.CheckOutDate,
+                 reservation.Status
+                 },
+               cancellationToken
+);
+
 
                 await transaction.CommitAsync(cancellationToken);
 

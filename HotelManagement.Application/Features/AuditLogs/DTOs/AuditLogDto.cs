@@ -11,6 +11,7 @@ namespace HotelManagement.Application.Features.AuditLogs.DTOs
     string EntityName,
     string? EntityId,
     string? UserId,
+    string Details,
     DateTime ActionDate
 );
 }
