@@ -88,9 +88,9 @@ JWT is configured in `HotelManagement.API/appsettings.json`:
 
 | Setting | Value | Purpose |
 |---|---|---|
-| `JwtKey` | `9fA7!sD23kL$gR91@XmZ#pT84QwVbNc5` | Symmetric signing key (HS256) |
-| `ValidIssuer` | `http://localhost:5188` | Expected token issuer |
-| `ValidAudience` | `http://localhost:5188` | Expected token audience |
+| `JwtKey` | `-` | Symmetric signing key (HS256) |
+| `ValidIssuer` | `http://localhost:****` | Expected token issuer |
+| `ValidAudience` | `http://localhost:****` | Expected token audience |
 
 - Tokens expire after **8 hours**.
 - **Production note:** replace `JwtKey` with a strong, randomly generated secret and store it safely (e.g. user-secrets, environment variable, or a secret manager). Do not commit real secrets.
